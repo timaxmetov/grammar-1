@@ -54,35 +54,46 @@
   }
 
   .progress-chip{
-    position:fixed; right:14px; bottom:14px; z-index:55;
-    display:flex; align-items:center; gap:8px;
+    position:fixed; right:10px; bottom:10px; z-index:55;
+    display:flex; align-items:center; gap:7px;
     background:var(--ink-1); border:1px solid var(--ink-2);
-    border-radius:999px; padding:8px 14px 8px 8px;
+    border-radius:999px; padding:6px 12px 6px 6px;
     box-shadow:0 8px 24px rgba(0,0,0,.35);
-    font-family:var(--font-mono); font-size:.72rem; color:var(--ink-mute);
+    font-family:var(--font-mono); font-size:.7rem; color:var(--ink-mute);
+    max-width:calc(50vw - 16px);
   }
   .progress-chip__ring{
-    width:26px;height:26px;border-radius:50%;
+    width:22px;height:22px;border-radius:50%;
     background:conic-gradient(var(--accent) calc(var(--pct,0)*1%), var(--ink-2) 0);
     display:flex;align-items:center;justify-content:center;flex:none;
   }
   .progress-chip__ring::after{
-    content:"";width:18px;height:18px;border-radius:50%;background:var(--ink-1);
+    content:"";width:15px;height:15px;border-radius:50%;background:var(--ink-1);
   }
   .progress-chip b{color:var(--ink-text); font-weight:600;}
+  .progress-chip__label{white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  @media (max-width:480px){ .progress-chip__label span{display:none;} }
 
-  /* ---------- voice picker ---------- */
+  /* ---------- voice picker (collapsible, so it never sits over content) ---------- */
   .voicebar{
-    position:fixed; left:14px; bottom:14px; z-index:55;
-    background:var(--ink-1); border:1px solid var(--ink-2);
-    border-radius:14px; padding:10px 12px;
-    box-shadow:0 8px 24px rgba(0,0,0,.35);
-    display:flex; flex-direction:column; gap:6px; max-width:220px;
-    font-size:.72rem; color:var(--ink-mute);
+    position:fixed; left:10px; bottom:10px; z-index:56;
+    display:flex; flex-direction:column-reverse; align-items:flex-start; gap:8px;
   }
+  .voicefab{
+    width:38px; height:38px; border-radius:50%; flex:none; padding:0;
+    background:var(--ink-1); border:1px solid var(--ink-2); color:var(--ink-text);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:1rem;
+    box-shadow:0 8px 24px rgba(0,0,0,.35);
+  }
+  .voicepanel{
+    display:none; flex-direction:column; gap:6px; max-width:min(220px, calc(100vw - 76px));
+    background:var(--ink-1); border:1px solid var(--ink-2); border-radius:14px; padding:10px 12px;
+    box-shadow:0 8px 24px rgba(0,0,0,.35); font-size:.72rem; color:var(--ink-mute);
+  }
+  .voicebar.open .voicepanel{display:flex;}
   .voicebar select{
     background:var(--ink-0); color:var(--ink-text); border:1px solid var(--ink-2);
-    border-radius:8px; padding:5px 6px; font-size:.72rem; max-width:196px;
+    border-radius:8px; padding:5px 6px; font-size:.72rem; max-width:100%;
   }
   .voicebar__label{font-family:var(--font-mono); text-transform:uppercase; letter-spacing:.06em; font-size:.62rem; color:var(--ink-mute);}
 
@@ -597,13 +608,16 @@
 
 <div class="progress-chip">
   <div class="progress-chip__ring" id="progRing" style="--pct:0"></div>
-  <span>прогресс: <b id="progText">0/11</b></span>
+  <span class="progress-chip__label"><span>прогресс: </span><b id="progText">0/11</b></span>
 </div>
 
-<div class="voicebar">
-  <span class="voicebar__label">озвучка</span>
-  <select id="voiceSelect"></select>
-  <button class="say-btn" id="voiceTest" data-say="I have been learning English for a while.">🔊 проверить голос</button>
+<div class="voicebar" id="voicebar">
+  <button class="voicefab" id="voiceToggle" type="button" aria-expanded="false" aria-label="Настройки озвучки">🔊</button>
+  <div class="voicepanel">
+    <span class="voicebar__label">озвучка</span>
+    <select id="voiceSelect"></select>
+    <button class="say-btn" id="voiceTest" data-say="I have been learning English for a while.">🔊 проверить голос</button>
+  </div>
 </div>
 
 <script>
@@ -634,6 +648,20 @@
     progRing.style.setProperty('--pct', pct);
     progText.textContent = done + '/' + TOTAL;
   }
+
+  /* ---------- voice picker toggle ---------- */
+  var voicebar = document.getElementById('voicebar');
+  var voiceToggle = document.getElementById('voiceToggle');
+  voiceToggle.addEventListener('click', function(){
+    var isOpen = voicebar.classList.toggle('open');
+    voiceToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+  document.addEventListener('click', function(e){
+    if(voicebar.classList.contains('open') && !voicebar.contains(e.target)){
+      voicebar.classList.remove('open');
+      voiceToggle.setAttribute('aria-expanded', 'false');
+    }
+  });
 
   /* ---------- voices ---------- */
   var voiceSelect = document.getElementById('voiceSelect');
