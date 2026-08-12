@@ -1,0 +1,906 @@
+<title>Present Perfect Continuous — разбор Tikitaka</title>
+<style>
+  :root{
+    --ink-0:#090b11;
+    --ink-1:#12161f;
+    --ink-2:#1e2433;
+    --ink-text:#eef0f6;
+    --ink-mute:#8991a6;
+
+    --paper-0:#f2f0ea;
+    --paper-1:#ffffff;
+    --paper-2:#e2ded2;
+    --paper-text:#171a1f;
+    --paper-mute:#5c6270;
+
+    --accent:#4f7dfb;
+    --accent-2:#8fb0ff;
+    --good:#1f9d6f;
+    --good-bg:#e4f6ee;
+    --bad:#d9463a;
+    --bad-bg:#fbe8e6;
+
+    --font-head:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --font-body:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --font-mono:ui-monospace,"Cascadia Code","SFMono-Regular",Consolas,"Courier New",monospace;
+
+    color-scheme: dark;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ink-0);
+    font-family:var(--font-body);
+    color:var(--ink-text);
+    -webkit-font-smoothing:antialiased;
+  }
+  img,svg{max-width:100%;display:block;}
+  button{font:inherit;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+  }
+
+  /* ---------- progress bar ---------- */
+  .readbar{
+    position:fixed; top:0; left:0; right:0; height:3px; z-index:60;
+    background:rgba(255,255,255,0.06);
+  }
+  .readbar__fill{
+    height:100%; width:0%;
+    background:linear-gradient(90deg,var(--accent),var(--accent-2));
+    transition:width .08s linear;
+  }
+
+  .progress-chip{
+    position:fixed; right:14px; bottom:14px; z-index:55;
+    display:flex; align-items:center; gap:8px;
+    background:var(--ink-1); border:1px solid var(--ink-2);
+    border-radius:999px; padding:8px 14px 8px 8px;
+    box-shadow:0 8px 24px rgba(0,0,0,.35);
+    font-family:var(--font-mono); font-size:.72rem; color:var(--ink-mute);
+  }
+  .progress-chip__ring{
+    width:26px;height:26px;border-radius:50%;
+    background:conic-gradient(var(--accent) calc(var(--pct,0)*1%), var(--ink-2) 0);
+    display:flex;align-items:center;justify-content:center;flex:none;
+  }
+  .progress-chip__ring::after{
+    content:"";width:18px;height:18px;border-radius:50%;background:var(--ink-1);
+  }
+  .progress-chip b{color:var(--ink-text); font-weight:600;}
+
+  /* ---------- voice picker ---------- */
+  .voicebar{
+    position:fixed; left:14px; bottom:14px; z-index:55;
+    background:var(--ink-1); border:1px solid var(--ink-2);
+    border-radius:14px; padding:10px 12px;
+    box-shadow:0 8px 24px rgba(0,0,0,.35);
+    display:flex; flex-direction:column; gap:6px; max-width:220px;
+    font-size:.72rem; color:var(--ink-mute);
+  }
+  .voicebar select{
+    background:var(--ink-0); color:var(--ink-text); border:1px solid var(--ink-2);
+    border-radius:8px; padding:5px 6px; font-size:.72rem; max-width:196px;
+  }
+  .voicebar__label{font-family:var(--font-mono); text-transform:uppercase; letter-spacing:.06em; font-size:.62rem; color:var(--ink-mute);}
+
+  .say-btn{
+    display:inline-flex; align-items:center; gap:5px;
+    border:1px solid var(--ink-2); background:var(--ink-0); color:var(--ink-text);
+    border-radius:999px; padding:4px 10px 4px 8px; cursor:pointer; font-size:.72rem;
+    line-height:1;
+  }
+  .say-btn:hover{border-color:var(--accent);}
+  .say-btn:focus-visible, button:focus-visible, .option-pill:focus-visible, .match-item:focus-visible, .token:focus-visible{
+    outline:2px solid var(--accent-2); outline-offset:2px;
+  }
+  .panel--light .say-btn{background:var(--paper-1); color:var(--paper-text); border-color:var(--paper-2);}
+
+  /* ---------- layout scaffolding ---------- */
+  .panel{padding:52px 0 56px;}
+  .panel--dark{background:var(--ink-0); color:var(--ink-text);}
+  .panel--darker{background:#070911;}
+  .panel--light{background:var(--paper-0); color:var(--paper-text);}
+  .wrap{width:100%; padding-inline:20px; margin-inline:auto;}
+  @media (min-width:640px){ .wrap{max-width:640px; padding-inline:28px;} }
+  @media (min-width:960px){ .wrap{max-width:760px;} }
+
+  .eyebrow{
+    font-family:var(--font-mono); font-size:.72rem; letter-spacing:.04em;
+    color:var(--accent-2); margin:0 0 14px;
+  }
+  .panel--light .eyebrow{color:#3459d6;}
+
+  .brand{display:flex; align-items:center; gap:9px; margin-bottom:22px;}
+  .brandmark{
+    width:28px; height:28px; border-radius:9px; flex:none;
+    background:linear-gradient(155deg,var(--accent-2),var(--accent));
+    display:flex; align-items:center; justify-content:center;
+  }
+  .brandmark svg{width:15px; height:15px; stroke:#0a1330; stroke-width:2.4; fill:none;}
+  .brand b{font-family:var(--font-head); font-weight:800; font-size:.94rem; letter-spacing:-.01em;}
+  .brand span{font-size:.74rem; color:var(--ink-mute); margin-left:2px;}
+
+  h1,h2,h3{font-family:var(--font-head); text-wrap:balance; margin:0;}
+  .h1{font-size:clamp(1.7rem,4.6vw + 1rem,2.5rem); font-weight:800; line-height:1.08; letter-spacing:-.01em;}
+  .h1 .thin{font-weight:400; color:var(--ink-mute); display:block; font-size:.62em; margin-bottom:6px;}
+  .panel--light .h1 .thin{color:var(--paper-mute);}
+  .h2{font-size:clamp(1.3rem,3vw + .8rem,1.7rem); font-weight:800; letter-spacing:-.01em; line-height:1.15;}
+  .h2 b{color:var(--accent);}
+  .panel--light .h2 b{color:#3459d6;}
+  .lead{font-size:1rem; line-height:1.6; color:var(--ink-mute); margin:16px 0 0; max-width:56ch;}
+  .panel--light .lead{color:var(--paper-mute);}
+  .muted{color:var(--ink-mute);}
+  .panel--light .muted{color:var(--paper-mute);}
+
+  /* ---------- buttons ---------- */
+  .btnrow{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:22px;}
+  .btn{
+    border-radius:999px; padding:12px 20px; font-weight:700; font-size:.9rem;
+    border:1px solid transparent; cursor:pointer; display:inline-flex; align-items:center; gap:8px;
+    text-decoration:none;
+  }
+  .btn--primary{background:linear-gradient(180deg,var(--accent-2),var(--accent)); color:#0a1330; box-shadow:0 8px 20px rgba(79,125,251,.28);}
+  .btn--ghost{background:transparent; border-color:var(--ink-2); color:var(--ink-text);}
+  .panel--light .btn--ghost{border-color:var(--paper-2); color:var(--paper-text);}
+  .timebadge{
+    width:64px; height:64px; border-radius:50%; flex:none;
+    background:conic-gradient(var(--accent) 0 62%, var(--ink-2) 0);
+    display:flex; align-items:center; justify-content:center; position:relative; margin-left:auto;
+  }
+  .timebadge::before{content:"";position:absolute; inset:5px; border-radius:50%; background:var(--ink-0);}
+  .timebadge span{position:relative; font-family:var(--font-mono); font-size:.68rem; text-align:center; line-height:1.15; color:var(--ink-text);}
+
+  /* ---------- stat row ---------- */
+  .statrow{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:26px;}
+  .statcard{background:var(--ink-1); border:1px solid var(--ink-2); border-radius:14px; padding:12px 12px;}
+  .statcard b{display:block; font-size:1.1rem; color:var(--accent-2);}
+  .statcard i{font-style:normal; font-size:.72rem; color:var(--ink-mute); display:block; margin-top:2px;}
+
+  /* ---------- chat-style fit list ---------- */
+  .fitlist{display:flex; flex-direction:column; gap:16px; margin-top:22px;}
+  .fititem{display:flex; flex-direction:column; gap:6px;}
+  .fitrow{background:var(--paper-1); border:1px solid var(--paper-2); border-radius:14px 14px 4px 14px; padding:12px 16px; font-weight:600; font-size:.92rem;}
+  .fitreply{align-self:flex-end; max-width:88%; background:linear-gradient(180deg,var(--accent-2),var(--accent)); color:#0a1330; border-radius:14px 14px 14px 4px; padding:10px 16px; font-size:.85rem; font-weight:600;}
+
+  /* ---------- benefit grid ---------- */
+  .bgrid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:24px;}
+  @media (min-width:640px){ .bgrid{grid-template-columns:repeat(3,1fr);} }
+  .bcard{background:var(--ink-1); border:1px solid var(--ink-2); border-radius:14px; padding:14px;}
+  .bicon{width:30px; height:30px; border-radius:8px; background:rgba(79,125,251,.16); display:flex; align-items:center; justify-content:center; margin-bottom:10px;}
+  .bicon svg{width:16px;height:16px;stroke:var(--accent-2);}
+  .bcard b{display:block; font-size:.85rem; margin-bottom:3px;}
+  .bcard span{font-size:.74rem; color:var(--ink-mute); line-height:1.35; display:block;}
+
+  /* ---------- formula ---------- */
+  .formula{display:flex; flex-wrap:wrap; gap:8px; margin-top:24px; font-family:var(--font-mono);}
+  .fpart{background:var(--paper-1); border:1px solid var(--paper-2); border-radius:12px; padding:12px 14px; text-align:center; flex:1 1 110px;}
+  .fpart b{display:block; font-size:1rem; color:#3459d6;}
+  .fpart span{font-size:.68rem; color:var(--paper-mute); text-transform:uppercase; letter-spacing:.04em;}
+  .fplus{align-self:center; color:var(--paper-mute); font-family:var(--font-mono); font-size:1.1rem;}
+
+  .timeline{margin-top:28px; background:var(--paper-1); border:1px solid var(--paper-2); border-radius:16px; padding:18px 16px 10px;}
+  .timeline svg{width:100%; height:auto;}
+  .timeline figcaption{font-size:.74rem; color:var(--paper-mute); text-align:center; margin-top:6px;}
+
+  .chiprow{display:flex; flex-wrap:wrap; gap:8px; margin-top:20px;}
+  .chip{
+    font-family:var(--font-mono); font-size:.74rem; padding:6px 12px; border-radius:999px;
+    background:#e8ecff; color:#2745b8; border:1px solid #cfd8ff;
+  }
+
+  /* ---------- compare rows (dark panel) ---------- */
+  .cmp{margin-top:26px; display:flex; flex-direction:column; gap:14px;}
+  .cmprow{background:var(--ink-1); border:1px solid var(--ink-2); border-radius:14px; padding:14px 16px;}
+  .cmprow header{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;}
+  .cmprow header b{font-size:.72rem; text-transform:uppercase; letter-spacing:.05em; color:var(--accent-2); font-family:var(--font-mono);}
+  .cmprow p{margin:0; font-family:var(--font-mono); font-size:.92rem;}
+  .cmprow small{display:block; margin-top:6px; font-size:.76rem; color:var(--ink-mute);}
+
+  /* ---------- dialogues ---------- */
+  .dlg{margin-top:22px; background:var(--paper-1); border:1px solid var(--paper-2); border-radius:16px; padding:16px;}
+  .dlg + .dlg{margin-top:16px;}
+  .dlg__tag{font-family:var(--font-mono); font-size:.68rem; color:#3459d6; text-transform:uppercase; letter-spacing:.05em; margin-bottom:10px; display:block;}
+  .bubble{max-width:86%; padding:9px 13px; border-radius:14px; font-size:.88rem; line-height:1.4; margin-bottom:8px; display:flex; align-items:center; gap:8px; justify-content:space-between; gap:10px;}
+  .bubble.a{background:#eef0f6; color:#171a1f; border-radius:14px 14px 14px 4px;}
+  .bubble.b{background:linear-gradient(180deg,var(--accent-2),var(--accent)); color:#0a1330; margin-left:auto; border-radius:14px 14px 4px 14px;}
+  .bubble .say-btn{flex:none; padding:3px 8px; font-size:.65rem;}
+
+  /* ---------- video ---------- */
+  .tabs{display:flex; gap:8px; margin-top:20px;}
+  .tabbtn{border:1px solid var(--ink-2); background:var(--ink-1); color:var(--ink-mute); border-radius:999px; padding:8px 16px; font-size:.82rem; font-weight:700; cursor:pointer;}
+  .tabbtn[aria-selected="true"]{background:var(--accent); color:#0a1330; border-color:var(--accent);}
+  .vgrid{display:grid; grid-template-columns:1fr; gap:12px; margin-top:16px;}
+  @media (min-width:640px){ .vgrid{grid-template-columns:1fr 1fr;} }
+  .vcard{background:var(--ink-1); border:1px solid var(--ink-2); border-radius:14px; overflow:hidden; display:block; text-decoration:none; color:inherit; transition:border-color .15s;}
+  .vcard:hover{border-color:var(--accent);}
+  .vthumb{aspect-ratio:16/9; background:linear-gradient(135deg,#1c2440,#0e1120); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;}
+  .vthumb img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.82;}
+  .vplay{width:44px; height:44px; border-radius:50%; background:rgba(10,13,20,.55); border:1px solid rgba(255,255,255,.35); display:flex; align-items:center; justify-content:center; backdrop-filter:blur(2px); position:relative; z-index:1;}
+  .vplay svg{width:16px; height:16px; fill:#fff; margin-left:2px;}
+  .vmeta{padding:10px 12px 12px;}
+  .vmeta b{display:block; font-size:.82rem; margin-bottom:4px; line-height:1.3;}
+  .vmeta span{font-size:.7rem; color:var(--ink-mute);}
+
+  /* ---------- exercise shared ---------- */
+  .exwrap{margin-top:20px; background:var(--paper-1); border:1px solid var(--paper-2); border-radius:16px; padding:16px;}
+  .exwrap + .exwrap{margin-top:18px;}
+  .exhead{display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:12px;}
+  .exhead h3{font-size:1rem;}
+  .exnum{font-family:var(--font-mono); font-size:.7rem; color:var(--paper-mute);}
+  .exnote{font-size:.78rem; color:var(--paper-mute); margin:0 0 4px;}
+
+  .qrow{margin-bottom:16px;}
+  .qrow:last-child{margin-bottom:0;}
+  .qtext{font-size:.92rem; margin-bottom:8px; line-height:1.5;}
+  .qtext code{font-family:var(--font-mono); background:#eef0f6; border-radius:5px; padding:1px 6px;}
+  .opts{display:flex; flex-wrap:wrap; gap:8px;}
+  .option-pill{
+    border:1px solid var(--paper-2); background:var(--paper-0); color:var(--paper-text);
+    border-radius:999px; padding:8px 14px; font-family:var(--font-mono); font-size:.82rem; cursor:pointer;
+  }
+  .option-pill:hover{border-color:var(--accent);}
+  .option-pill.correct{background:var(--good-bg); border-color:var(--good); color:#0d5c3f;}
+  .option-pill.wrong{background:var(--bad-bg); border-color:var(--bad); color:#8a2c24;}
+  .qexpl{font-size:.78rem; color:var(--paper-mute); margin-top:7px; display:none; line-height:1.4;}
+  .qexpl.show{display:block;}
+
+  .builder-target{font-family:var(--font-mono); font-size:.7rem; color:var(--paper-mute); margin-bottom:8px;}
+  .slot{
+    min-height:44px; border:1.5px dashed var(--paper-2); border-radius:12px; padding:8px;
+    display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-bottom:10px; background:var(--paper-0);
+  }
+  .bank{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;}
+  .token{
+    border:1px solid var(--paper-2); background:var(--paper-1); border-radius:8px; padding:7px 11px;
+    font-family:var(--font-mono); font-size:.82rem; cursor:pointer;
+  }
+  .token.used{opacity:.35; pointer-events:none;}
+  .exbtnrow{display:flex; gap:8px; flex-wrap:wrap;}
+  .exbtn{
+    border-radius:8px; border:1px solid var(--paper-2); background:var(--paper-0); color:var(--paper-text);
+    padding:8px 14px; font-size:.8rem; font-weight:700; cursor:pointer;
+  }
+  .exbtn.primary{background:var(--accent); border-color:var(--accent); color:#fff;}
+  .buildfeedback{font-size:.8rem; margin-top:8px; min-height:1.2em;}
+  .buildfeedback.ok{color:var(--good);}
+  .buildfeedback.bad{color:var(--bad);}
+
+  .matchgrid{display:grid; grid-template-columns:1fr; gap:16px;}
+  @media (min-width:520px){ .matchgrid{grid-template-columns:1fr 1fr;} }
+  .matchcol{display:flex; flex-direction:column; gap:8px;}
+  .match-item{
+    border:1px solid var(--paper-2); background:var(--paper-0); border-radius:10px; padding:10px 12px;
+    font-size:.82rem; cursor:pointer; text-align:left;
+  }
+  .match-item.selected{border-color:var(--accent); background:#e8ecff;}
+  .match-item.correct{border-color:var(--good); background:var(--good-bg); color:#0d5c3f; cursor:default;}
+  .match-item.wrong{border-color:var(--bad); background:var(--bad-bg);}
+
+  /* ---------- cheat card ---------- */
+  .cheat{background:var(--paper-1); color:var(--paper-text); border-radius:18px; padding:22px; margin-top:24px;}
+  .cheat h3{font-size:1.05rem; margin-bottom:12px;}
+  .cheat .row{display:flex; gap:10px; margin-bottom:10px; font-size:.86rem; align-items:flex-start;}
+  .cheat .row b{font-family:var(--font-mono); background:#eef0f6; border-radius:6px; padding:2px 8px; flex:none; font-size:.78rem;}
+  .cheat .punch{font-weight:700; margin-top:12px; font-size:.92rem;}
+
+  .foot{padding:30px 0 90px; text-align:center;}
+  .foot p{font-size:.76rem; color:var(--ink-mute); font-family:var(--font-mono);}
+
+  a{color:inherit;}
+  .sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);}
+</style>
+
+<div class="readbar"><div class="readbar__fill" id="readbarFill"></div></div>
+
+<!-- ================= HERO ================= -->
+<section class="panel panel--dark">
+  <div class="wrap">
+    <div class="brand">
+      <div class="brandmark"><svg viewBox="0 0 24 24"><path d="M4 8c3-4 6-4 8 0s5 4 8 0" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <b>Tikitaka</b><span>&middot; школа английского &middot; онлайн-разбор</span>
+    </div>
+    <p class="eyebrow">&gt; уровень B1&ndash;B2 &middot; 18 минут &lt;</p>
+    <h1 class="h1"><span class="thin">Один процесс держит половину рассказов о жизни.</span>Разберём Present Perfect Continuous</h1>
+    <p class="lead">Учу английский вместе с вами. В английском есть конструкция have/has been + Ving. Переводится как «делаю уже какое-то время». Но не только.</p>
+    <p class="lead" style="margin-top:8px">Конструкция путается с Present Perfect Simple. Путается с Past Continuous. Путается с самим собой в вопросах. Я решил разобраться. Получился этот разбор. <b>Вы сейчас его читаете.</b></p>
+    <div class="btnrow">
+      <a href="#formula" class="btn btn--primary">Разобраться</a>
+      <a href="#exercises" class="btn btn--ghost">Сразу к упражнениям</a>
+      <div class="timebadge"><span>18<br>мин</span></div>
+    </div>
+    <div class="statrow">
+      <div class="statcard"><b>1</b><i>формула на всё</i></div>
+      <div class="statcard"><b>6</b><i>сигнальных слов</i></div>
+      <div class="statcard"><b>3</b><i>диалога из кофейни</i></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FIT ================= -->
+<section class="panel panel--light">
+  <div class="wrap">
+    <p class="eyebrow" style="color:#3459d6">&gt; немного деталей &lt;</p>
+    <h2 class="h2">Этот разбор подходит вам, <b>если вы:</b></h2>
+    <div class="fitlist">
+      <div class="fititem">
+        <div class="fitrow">Написали I have been knowing him for years</div>
+        <div class="fitreply">и intuitively чувствуете, что что-то не так</div>
+      </div>
+      <div class="fititem">
+        <div class="fitrow">Путаете have been doing и have done</div>
+        <div class="fitreply">и выбираете наугад</div>
+      </div>
+      <div class="fititem">
+        <div class="fitrow">Видите for и since</div>
+        <div class="fitreply">и мысленно киваете, не понимая разницы</div>
+      </div>
+      <div class="fititem">
+        <div class="fitrow">Готовитесь отвечать на How long...?</div>
+        <div class="fitreply">и хотите звучать как носитель, а не как учебник</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BENEFITS ================= -->
+<section class="panel panel--dark">
+  <div class="wrap">
+    <p class="eyebrow">&gt; готовы разобраться? &lt;</p>
+    <h2 class="h2">Потому что после разбора <b>вы сможете:</b></h2>
+    <div class="bgrid">
+      <div class="bcard">
+        <div class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <b>Говорить о длительности</b>
+        <span>I've been waiting for an hour — без запинки</span>
+      </div>
+      <div class="bcard">
+        <div class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M4 12h16M14 6l6 6-6 6"/></svg></div>
+        <b>Отличать процесс от результата</b>
+        <span>have been writing vs have written</span>
+      </div>
+      <div class="bcard">
+        <div class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 3v6M9 6l3-3 3 3"/><circle cx="12" cy="15" r="6"/></svg></div>
+        <b>Ставить for и since</b>
+        <span>точка старта или длина отрезка</span>
+      </div>
+      <div class="bcard">
+        <div class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M5 12l5 5L20 7"/></svg></div>
+        <b>Строить вопрос How long</b>
+        <span>без лишних слов и без паники</span>
+      </div>
+      <div class="bcard">
+        <div class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg></div>
+        <b>Ловить исключения</b>
+        <span>know, own, believe — не по этой схеме</span>
+      </div>
+      <div class="bcard">
+        <div class="bicon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h10M4 18h13"/></svg></div>
+        <b>Закрыть тему</b>
+        <span>без лотереи на экзамене</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FORMULA ================= -->
+<section class="panel panel--light" id="formula">
+  <div class="wrap">
+    <p class="eyebrow" style="color:#3459d6">&gt; начнём с главного &lt;</p>
+    <h2 class="h2">Одна формула. <b>Три куска.</b></h2>
+    <p class="lead" style="color:#5c6270">have/has не меняется по смыслу. been не меняется никогда. Меняется только -ing на конце глагола. Вот и вся механика.</p>
+
+    <div class="formula">
+      <div class="fpart"><b>have / has</b><span>вспомогательный</span></div>
+      <div class="fplus">+</div>
+      <div class="fpart"><b>been</b><span>всегда одинаково</span></div>
+      <div class="fplus">+</div>
+      <div class="fpart"><b>doing</b><span>смысловой глагол + ing</span></div>
+    </div>
+
+    <figure class="timeline">
+      <svg viewBox="0 0 600 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Диаграмма: действие началось в прошлом и продолжается сейчас">
+        <line x1="40" y1="70" x2="560" y2="70" stroke="#c8cbe0" stroke-width="2"/>
+        <circle cx="60" cy="70" r="7" fill="#3459d6"/>
+        <text x="60" y="98" font-size="12" fill="#5c6270" text-anchor="middle" font-family="ui-monospace,Consolas,monospace">started</text>
+        <text x="60" y="34" font-size="12" fill="#171a1f" text-anchor="middle" font-family="ui-monospace,Consolas,monospace">since 6:00</text>
+
+        <g stroke="#4f7dfb" stroke-width="3" stroke-linecap="round">
+          <line x1="90" y1="70" x2="110" y2="70" stroke-dasharray="1 10"/>
+          <line x1="120" y1="70" x2="140" y2="70" stroke-dasharray="1 10"/>
+          <line x1="150" y1="70" x2="170" y2="70" stroke-dasharray="1 10"/>
+          <line x1="180" y1="70" x2="200" y2="70" stroke-dasharray="1 10"/>
+          <line x1="210" y1="70" x2="230" y2="70" stroke-dasharray="1 10"/>
+          <line x1="240" y1="70" x2="260" y2="70" stroke-dasharray="1 10"/>
+          <line x1="270" y1="70" x2="290" y2="70" stroke-dasharray="1 10"/>
+          <line x1="300" y1="70" x2="320" y2="70" stroke-dasharray="1 10"/>
+          <line x1="330" y1="70" x2="350" y2="70" stroke-dasharray="1 10"/>
+          <line x1="360" y1="70" x2="380" y2="70" stroke-dasharray="1 10"/>
+          <line x1="390" y1="70" x2="410" y2="70" stroke-dasharray="1 10"/>
+          <line x1="420" y1="70" x2="440" y2="70" stroke-dasharray="1 10"/>
+        </g>
+        <text x="270" y="52" font-size="12" fill="#3459d6" font-weight="700" text-anchor="middle" font-family="ui-monospace,Consolas,monospace">for 2 hours — процесс идёт</text>
+
+        <circle cx="460" cy="70" r="9" fill="#3459d6">
+          <animate attributeName="r" values="9;13;9" dur="1.6s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="1;.55;1" dur="1.6s" repeatCount="indefinite"/>
+        </circle>
+        <text x="460" y="98" font-size="12" fill="#171a1f" font-weight="700" text-anchor="middle" font-family="ui-monospace,Consolas,monospace">now</text>
+
+        <path d="M480 70 L540 40" stroke="#8fa3c8" stroke-width="2" stroke-dasharray="3 5" marker-end="url(#arr)"/>
+        <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#8fa3c8"/></marker></defs>
+        <text x="565" y="36" font-size="11" fill="#8991a6" text-anchor="end" font-family="ui-monospace,Consolas,monospace">и не закончилось</text>
+      </svg>
+      <figcaption>I have been waiting for two hours — старт в прошлом, процесс тянется до момента речи</figcaption>
+    </figure>
+
+    <p class="lead" style="color:#5c6270; margin-top:20px">Сигнальные слова, по которым эта конструкция узнаётся в тексте раньше, чем вы успеваете подумать о правиле:</p>
+    <div class="chiprow">
+      <span class="chip">for + отрезок</span>
+      <span class="chip">since + точка</span>
+      <span class="chip">how long...?</span>
+      <span class="chip">lately</span>
+      <span class="chip">recently</span>
+      <span class="chip">all day / all morning</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= COMPARE ================= -->
+<section class="panel panel--dark">
+  <div class="wrap">
+    <p class="eyebrow">&gt; частая путаница &lt;</p>
+    <h2 class="h2">Continuous vs Simple. <b>Процесс vs результат.</b></h2>
+    <p class="lead">Обе формы про прошлое, которое трогает настоящее. Разница — в том, что вы хотите подчеркнуть.</p>
+    <div class="cmp">
+      <div class="cmprow">
+        <header><b>continuous · процесс</b></header>
+        <p>I have been writing emails all morning.</p>
+        <small>Важно, чем вы были заняты и как долго. Возможно, ещё не закончили. Отсюда усталость, беспорядок на столе, красные глаза.</small>
+      </div>
+      <div class="cmprow">
+        <header><b>simple · результат</b></header>
+        <p>I have written three emails.</p>
+        <small>Важно количество и факт завершения. Процесс никого не интересует — интересен итог.</small>
+      </div>
+      <div class="cmprow">
+        <header><b>исключение · state-глаголы</b></header>
+        <p>I have known him for ten years.</p>
+        <small>know, own, believe, understand, want, like — глаголы состояния. У них нет формы -ing. Даже если очень хочется процесса.</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DIALOGUES ================= -->
+<section class="panel panel--light">
+  <div class="wrap">
+    <p class="eyebrow" style="color:#3459d6">&gt; примеры из жизни &lt;</p>
+    <h2 class="h2">Три диалога. <b>Одна кофейня.</b></h2>
+    <p class="lead" style="color:#5c6270">У меня была кофейня. В кофейне все фразы звучали примерно так.</p>
+
+    <div class="dlg">
+      <span class="dlg__tag">since / for — длительность до сих пор</span>
+      <div class="bubble a">How long have you been running this café? <button class="say-btn" data-say="How long have you been running this café?">🔊</button></div>
+      <div class="bubble b">I've been running it since March. <button class="say-btn" data-say="I've been running it since March.">🔊</button></div>
+      <div class="bubble a">Only five months? <button class="say-btn" data-say="Only five months?">🔊</button></div>
+      <div class="bubble b">Feels longer. <button class="say-btn" data-say="Feels longer.">🔊</button></div>
+    </div>
+
+    <div class="dlg">
+      <span class="dlg__tag">недавний процесс с видимым следом</span>
+      <div class="bubble a">Why is the espresso machine wet? <button class="say-btn" data-say="Why is the espresso machine wet?">🔊</button></div>
+      <div class="bubble b">I've been cleaning it all morning. <button class="say-btn" data-say="I've been cleaning it all morning.">🔊</button></div>
+      <div class="bubble a">It's still dirty. <button class="say-btn" data-say="It's still dirty.">🔊</button></div>
+      <div class="bubble b">I know. I've been trying. <button class="say-btn" data-say="I know. I've been trying.">🔊</button></div>
+    </div>
+
+    <div class="dlg">
+      <span class="dlg__tag">how long — вопрос о длительности</span>
+      <div class="bubble a">You look exhausted. <button class="say-btn" data-say="You look exhausted.">🔊</button></div>
+      <div class="bubble b">I've been standing here since six. <button class="say-btn" data-say="I've been standing here since six.">🔊</button></div>
+      <div class="bubble a">The doors open at eight. <button class="say-btn" data-say="The doors open at eight.">🔊</button></div>
+      <div class="bubble b">I know. I've been waiting for the delivery. <button class="say-btn" data-say="I know. I've been waiting for the delivery.">🔊</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= VIDEO ================= -->
+<section class="panel panel--dark">
+  <div class="wrap">
+    <p class="eyebrow">&gt; посмотреть по теме &lt;</p>
+    <h2 class="h2">Видео. <b>По уровню.</b></h2>
+    <p class="lead">A0&ndash;A2 — на русском, без терминов. B1&ndash;C1 — на английском, с примерами посложнее. Нажмите на карточку — откроется настоящее видео на YouTube в новой вкладке.</p>
+
+    <div class="tabs" role="tablist">
+      <button class="tabbtn" role="tab" aria-selected="true" id="tabRu">RU · A0&ndash;A2</button>
+      <button class="tabbtn" role="tab" aria-selected="false" id="tabEn">EN · B1&ndash;C1</button>
+    </div>
+
+    <div class="vgrid" id="vgridRu">
+      <a class="vcard" href="https://www.youtube.com/watch?v=ZcWCKMxuWZU" target="_blank" rel="noopener">
+        <div class="vthumb"><img src="https://img.youtube.com/vi/ZcWCKMxuWZU/hqdefault.jpg" alt="" loading="lazy"><div class="vplay"><svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8V4z"/></svg></div></div>
+        <div class="vmeta"><b>Present Perfect Continuous — настоящее завершённое продолженное время</b><span>объяснение на русском · формула и примеры · YouTube</span></div>
+      </a>
+      <a class="vcard" href="https://www.youtube.com/watch?v=Fh1mQ1_pDMc" target="_blank" rel="noopener">
+        <div class="vthumb"><img src="https://img.youtube.com/vi/Fh1mQ1_pDMc/hqdefault.jpg" alt="" loading="lazy"><div class="vplay"><svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8V4z"/></svg></div></div>
+        <div class="vmeta"><b>Всё про Present Perfect и Present Perfect Continuous за 20 минут</b><span>Инглекс · разбор на русском · YouTube</span></div>
+      </a>
+    </div>
+
+    <div class="vgrid" id="vgridEn" style="display:none">
+      <a class="vcard" href="https://www.youtube.com/watch?v=A4LNCzd5JU4" target="_blank" rel="noopener">
+        <div class="vthumb"><img src="https://img.youtube.com/vi/A4LNCzd5JU4/hqdefault.jpg" alt="" loading="lazy"><div class="vplay"><svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8V4z"/></svg></div></div>
+        <div class="vmeta"><b>Present Perfect Continuous Tense</b><span>English grammar tutorial · YouTube</span></div>
+      </a>
+      <a class="vcard" href="https://www.youtube.com/watch?v=Lv3dgXjAru8" target="_blank" rel="noopener">
+        <div class="vthumb"><img src="https://img.youtube.com/vi/Lv3dgXjAru8/hqdefault.jpg" alt="" loading="lazy"><div class="vplay"><svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8V4z"/></svg></div></div>
+        <div class="vmeta"><b>Present Perfect and Present Perfect Continuous</b><span>English grammar tutorial · YouTube</span></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= EXERCISES ================= -->
+<section class="panel panel--light" id="exercises">
+  <div class="wrap">
+    <p class="eyebrow" style="color:#3459d6">&gt; проверка &lt;</p>
+    <h2 class="h2">Три вида упражнений. <b>Одна тема.</b></h2>
+    <p class="lead" style="color:#5c6270">Ошибаться можно. Ошибка здесь дешевле, чем на экзамене.</p>
+
+    <!-- fill blank -->
+    <div class="exwrap">
+      <div class="exhead"><h3>1. Вставьте пропуск</h3><span class="exnum" id="fbCount">0 / 5</span></div>
+      <div id="fbList"></div>
+    </div>
+
+    <!-- sentence builder -->
+    <div class="exwrap">
+      <div class="exhead"><h3>2. Соберите предложение</h3><span class="exnum" id="sbCount">0 / 2</span></div>
+      <p class="exnote">Нажимайте на слова по порядку. Ошиблись — жмите «Сбросить».</p>
+      <div id="sbList"></div>
+    </div>
+
+    <!-- match -->
+    <div class="exwrap">
+      <div class="exhead"><h3>3. Соедините пары</h3><span class="exnum" id="mtCount">0 / 4</span></div>
+      <p class="exnote">Сначала слово слева, потом подходящее описание справа.</p>
+      <div class="matchgrid">
+        <div class="matchcol" id="mtLeft"></div>
+        <div class="matchcol" id="mtRight"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CHEAT CARD ================= -->
+<section class="panel panel--dark">
+  <div class="wrap">
+    <p class="eyebrow">&gt; итог &lt;</p>
+    <h2 class="h2">Один разбор. <b>Всё по полочкам.</b></h2>
+    <div class="cheat">
+      <h3>Present Perfect Continuous</h3>
+      <div class="row"><b>+</b><span>have/has been + doing — I have been reading this book.</span></div>
+      <div class="row"><b>?</b><span>Have/Has + subject + been + doing — Have you been reading?</span></div>
+      <div class="row"><b>&minus;</b><span>haven't/hasn't been + doing — She hasn't been sleeping well.</span></div>
+      <div class="row"><b>for</b><span>отрезок времени — for two hours, for three years</span></div>
+      <div class="row"><b>since</b><span>точка начала — since 6 a.m., since 2019</span></div>
+      <div class="row"><b>&ne;</b><span>know, own, believe, understand, want — только Simple, без -ing</span></div>
+      <p class="punch">Вы реально поняли Present Perfect Continuous, когда перестали переводить дословно и начали слышать процесс, а не результат.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="foot"><div class="wrap"><p>tikitaka · present perfect continuous · сделано для разбора, не для зубрёжки</p></div></footer>
+
+<div class="progress-chip">
+  <div class="progress-chip__ring" id="progRing" style="--pct:0"></div>
+  <span>прогресс: <b id="progText">0/11</b></span>
+</div>
+
+<div class="voicebar">
+  <span class="voicebar__label">озвучка</span>
+  <select id="voiceSelect"></select>
+  <button class="say-btn" id="voiceTest" data-say="I have been learning English for a while.">🔊 проверить голос</button>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- reading progress bar ---------- */
+  var fill = document.getElementById('readbarFill');
+  function onScroll(){
+    var h = document.documentElement;
+    var scrollTop = h.scrollTop || document.body.scrollTop;
+    var scrollH = (h.scrollHeight || document.body.scrollHeight) - h.clientHeight;
+    var pct = scrollH > 0 ? Math.min(100, (scrollTop/scrollH)*100) : 0;
+    fill.style.width = pct + '%';
+  }
+  document.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  /* ---------- exercise progress ---------- */
+  var TOTAL = 11; /* 5 fill-blank + 2 builder + 4 match */
+  var done = 0;
+  var progRing = document.getElementById('progRing');
+  var progText = document.getElementById('progText');
+  function bump(){
+    done++;
+    if(done>TOTAL) done = TOTAL;
+    var pct = Math.round((done/TOTAL)*100);
+    progRing.style.setProperty('--pct', pct);
+    progText.textContent = done + '/' + TOTAL;
+  }
+
+  /* ---------- voices ---------- */
+  var voiceSelect = document.getElementById('voiceSelect');
+  var voices = [];
+  function loadVoices(){
+    voices = (window.speechSynthesis ? window.speechSynthesis.getVoices() : []).filter(function(v){
+      return /^en/i.test(v.lang);
+    });
+    if(!voices.length && window.speechSynthesis){
+      voices = window.speechSynthesis.getVoices();
+    }
+    voiceSelect.innerHTML = '';
+    if(!voices.length){
+      var opt = document.createElement('option');
+      opt.textContent = 'голоса не найдены';
+      voiceSelect.appendChild(opt);
+      voiceSelect.disabled = true;
+      return;
+    }
+    voices.forEach(function(v, i){
+      var opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = v.name + ' (' + v.lang + ')';
+      voiceSelect.appendChild(opt);
+    });
+  }
+  if(window.speechSynthesis){
+    loadVoices();
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+  } else {
+    voiceSelect.innerHTML = '<option>речь не поддерживается</option>';
+    voiceSelect.disabled = true;
+  }
+
+  function speak(text){
+    if(!window.speechSynthesis || !text) return;
+    window.speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(text);
+    var idx = voiceSelect.value;
+    if(voices[idx]){ u.voice = voices[idx]; u.lang = voices[idx].lang; }
+    else { u.lang = 'en-US'; }
+    u.rate = 0.95;
+    window.speechSynthesis.speak(u);
+  }
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest('.say-btn');
+    if(btn){ speak(btn.getAttribute('data-say')); }
+  });
+
+  /* ---------- fill blank ---------- */
+  var FB = [
+    {q:'She <code>___</code> for two hours.', opts:['has been waiting','have been waiting','has being waiting'], correct:0,
+     expl:'She → has. Формула: has been + Ving.'},
+    {q:'They <code>___</code> since 9 a.m.', opts:['has been working','have been working','have working'], correct:1,
+     expl:'They → have. been обязателен, просто "have working" не собирает конструкцию.'},
+    {q:"I'm tired. I <code>___</code> all day.", opts:['have been cooking','has been cooking','have cook'], correct:0,
+     expl:'I → have. all day — сигнал длительности, поэтому continuous.'},
+    {q:'<code>___</code> you been sleeping well lately?', opts:['Have','Has','Did'], correct:0,
+     expl:'you → Have. Вопрос строится выносом вспомогательного глагола вперёд.'},
+    {q:'He <code>___</code> that car for ten years — he still loves it.', opts:['has been owning','has owned','have owned'], correct:1,
+     expl:'own — глагол состояния, у него нет формы -ing. Здесь работает Present Perfect Simple, а не Continuous.'}
+  ];
+  var fbList = document.getElementById('fbList');
+  var fbCount = document.getElementById('fbCount');
+  var fbDone = 0;
+  FB.forEach(function(item, qi){
+    var row = document.createElement('div');
+    row.className = 'qrow';
+    var qtext = document.createElement('p');
+    qtext.className = 'qtext';
+    qtext.innerHTML = item.q;
+    row.appendChild(qtext);
+    var opts = document.createElement('div');
+    opts.className = 'opts';
+    var expl = document.createElement('p');
+    expl.className = 'qexpl';
+    expl.textContent = item.expl;
+    var answered = false;
+    item.opts.forEach(function(label, oi){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'option-pill';
+      b.textContent = label;
+      b.addEventListener('click', function(){
+        if(answered) return;
+        answered = true;
+        fbDone++;
+        fbCount.textContent = fbDone + ' / 5';
+        bump();
+        Array.prototype.forEach.call(opts.children, function(el, ei){
+          if(ei === item.correct) el.classList.add('correct');
+          else if(ei === oi) el.classList.add('wrong');
+        });
+        expl.classList.add('show');
+      });
+      opts.appendChild(b);
+    });
+    row.appendChild(opts);
+    row.appendChild(expl);
+    fbList.appendChild(row);
+  });
+
+  /* ---------- sentence builder ---------- */
+  var SB = [
+    {words:['How','long','have','you','been','learning','English','?'], target:'How long have you been learning English ?'},
+    {words:['She','has','been','working','here','since','2019','.'], target:'She has been working here since 2019 .'}
+  ];
+  var sbList = document.getElementById('sbList');
+  var sbCount = document.getElementById('sbCount');
+  var sbDone = 0;
+  function shuffle(arr){
+    var a = arr.slice();
+    for(var i=a.length-1;i>0;i--){
+      var j = Math.floor(((i*9301+49297)%233280)/233280 * (i+1));
+      var t=a[i]; a[i]=a[j]; a[j]=t;
+    }
+    return a;
+  }
+  SB.forEach(function(item, si){
+    var wrap = document.createElement('div');
+    wrap.style.marginBottom = '18px';
+    var built = [];
+    var slot = document.createElement('div');
+    slot.className = 'slot';
+    var bank = document.createElement('div');
+    bank.className = 'bank';
+    var feedback = document.createElement('div');
+    feedback.className = 'buildfeedback';
+    var solved = false;
+
+    var order = shuffle(item.words.map(function(w,i){return {w:w,i:i};}));
+    var tokenEls = [];
+    order.forEach(function(entry){
+      var tok = document.createElement('button');
+      tok.type = 'button';
+      tok.className = 'token';
+      tok.textContent = entry.w;
+      tok.addEventListener('click', function(){
+        if(solved || tok.classList.contains('used')) return;
+        tok.classList.add('used');
+        built.push(entry.w);
+        var chip = document.createElement('span');
+        chip.className = 'token';
+        chip.textContent = entry.w;
+        slot.appendChild(chip);
+      });
+      tokenEls.push(tok);
+      bank.appendChild(tok);
+    });
+
+    var btnrow = document.createElement('div');
+    btnrow.className = 'exbtnrow';
+    var checkBtn = document.createElement('button');
+    checkBtn.type = 'button';
+    checkBtn.className = 'exbtn primary';
+    checkBtn.textContent = 'Проверить';
+    checkBtn.addEventListener('click', function(){
+      var attempt = built.join(' ');
+      if(attempt === item.target){
+        feedback.textContent = 'Верно — предложение собрано правильно.';
+        feedback.className = 'buildfeedback ok';
+        if(!solved){ solved = true; sbDone++; sbCount.textContent = sbDone + ' / 2'; bump(); }
+      } else {
+        feedback.textContent = 'Пока не так. Проверьте порядок слов и жмите «Сбросить».';
+        feedback.className = 'buildfeedback bad';
+      }
+    });
+    var resetBtn = document.createElement('button');
+    resetBtn.type = 'button';
+    resetBtn.className = 'exbtn';
+    resetBtn.textContent = 'Сбросить';
+    resetBtn.addEventListener('click', function(){
+      built = [];
+      slot.innerHTML = '';
+      feedback.textContent = '';
+      tokenEls.forEach(function(t){ t.classList.remove('used'); });
+    });
+    btnrow.appendChild(checkBtn);
+    btnrow.appendChild(resetBtn);
+
+    var label = document.createElement('p');
+    label.className = 'builder-target';
+    label.textContent = 'предложение ' + (si+1) + ' из ' + SB.length;
+
+    wrap.appendChild(label);
+    wrap.appendChild(slot);
+    wrap.appendChild(bank);
+    wrap.appendChild(btnrow);
+    wrap.appendChild(feedback);
+    sbList.appendChild(wrap);
+  });
+
+  /* ---------- match pairs ---------- */
+  var MT = [
+    {left:'since', right:'точка начала действия — since 6 a.m.'},
+    {left:'for', right:'длина отрезка — for three years'},
+    {left:'How long...?', right:'вопрос о длительности действия'},
+    {left:'lately / recently', right:'неопределённый недавний период'}
+  ];
+  var mtLeft = document.getElementById('mtLeft');
+  var mtRight = document.getElementById('mtRight');
+  var mtCount = document.getElementById('mtCount');
+  var mtDone = 0;
+  var rightOrder = shuffle(MT.map(function(m,i){return i;}));
+  var selectedLeft = null;
+  var leftEls = [];
+  var rightEls = [];
+
+  MT.forEach(function(item, i){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'match-item';
+    b.textContent = item.left;
+    b.dataset.idx = i;
+    b.addEventListener('click', function(){
+      if(b.classList.contains('correct')) return;
+      leftEls.forEach(function(el){ el.classList.remove('selected'); });
+      b.classList.add('selected');
+      selectedLeft = i;
+    });
+    leftEls.push(b);
+    mtLeft.appendChild(b);
+  });
+
+  rightOrder.forEach(function(i){
+    var item = MT[i];
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'match-item';
+    b.textContent = item.right;
+    b.dataset.idx = i;
+    b.addEventListener('click', function(){
+      if(selectedLeft === null || b.classList.contains('correct')) return;
+      if(selectedLeft === i){
+        b.classList.remove('wrong');
+        b.classList.add('correct');
+        leftEls[selectedLeft].classList.remove('selected');
+        leftEls[selectedLeft].classList.add('correct');
+        mtDone++;
+        mtCount.textContent = mtDone + ' / 4';
+        bump();
+        selectedLeft = null;
+      } else {
+        b.classList.add('wrong');
+        setTimeout(function(){ b.classList.remove('wrong'); }, 500);
+      }
+    });
+    rightEls.push(b);
+    mtRight.appendChild(b);
+  });
+
+  /* ---------- video tabs ---------- */
+  var tabRu = document.getElementById('tabRu');
+  var tabEn = document.getElementById('tabEn');
+  var vgridRu = document.getElementById('vgridRu');
+  var vgridEn = document.getElementById('vgridEn');
+  tabRu.addEventListener('click', function(){
+    tabRu.setAttribute('aria-selected','true');
+    tabEn.setAttribute('aria-selected','false');
+    vgridRu.style.display = '';
+    vgridEn.style.display = 'none';
+  });
+  tabEn.addEventListener('click', function(){
+    tabEn.setAttribute('aria-selected','true');
+    tabRu.setAttribute('aria-selected','false');
+    vgridEn.style.display = '';
+    vgridRu.style.display = 'none';
+  });
+})();
+</script>
